@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Add Food - NutriSmart Health System{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+                    <div class="icon-box-sm bg-soft-emerald text-emerald rounded-circle me-3 text-center">
+                        <i class="fa-solid fa-circle-plus fs-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold text-slate mb-0">Record Food Intake</h3>
+                        <p class="text-muted small mb-0">Log your meals to dynamically update your calories, macros, and weekly charts</p>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('add_food') }}" id="addFoodForm">
+                    <!-- Food Selection -->
+                    <div class="mb-3">
+                        <label for="food_id" class="form-label small fw-semibold text-slate">Select Food</label>
+                        <select class="form-select select-food-dropdown" id="food_id" name="food_id" required>
+                            <option value="">-- Choose Food from Database --</option>
+                            {% for f in all_foods %}
+                                <option value="{{ f.id }}" 
+                                        data-cals="{{ f.calories }}" 
+                                        data-prot="{{ f.protein }}" 
+                                        data-carb="{{ f.carbohydrates }}" 
+                                        data-fat="{{ f.fat }}" 
+                                        data-serving="{{ f.serving_size }}"
+                                        {% if prefill_food_id == f.id %}selected{% endif %}>
+                                    {{ f.name }} ({{ f.serving_size }} - {{ f.calories }} kcal)
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text small">
+                            Don't see your food? Try scanning or analyzing with the <a href="{{ url_for('food_analyzer') }}" class="text-emerald">Food Analyzer</a>.
+                        </div>
+                    </div>
+
+                    <!-- Quantity & Serving Info -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="quantity" class="form-label small fw-semibold text-slate">Portion / Quantity (Servings)</label>
+                            <div class="input-group">
+                                <input type="number" step="0.1" min="0.1" max="20" class="form-control" id="quantity" name="quantity" value="1.0" required>
+                                <span class="input-group-text bg-light text-muted" id="servingSizeBadge">serving</span>
+                            </div>
+                            <small class="text-muted">e.g. 1.0 = 1 full serving, 0.5 = half serving, 2.0 = double</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="meal_type" class="form-label small fw-semibold text-slate">Meal Type</label>
+                            <select class="form-select" id="meal_type" name="meal_type" required>
+                                <option value="Breakfast" {% if prefill_meal == 'Breakfast' %}selected{% endif %}>Breakfast</option>
+                                <option value="Lunch" {% if prefill_meal == 'Lunch' or not prefill_meal %}selected{% endif %}>Lunch</option>
+                                <option value="Dinner" {% if prefill_meal == 'Dinner' %}selected{% endif %}>Dinner</option>
+                                <option value="Snack" {% if prefill_meal == 'Snack' %}selected{% endif %}>Snack</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Date & Time -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="date" class="form-label small fw-semibold text-slate">Date</label>
+                            <input type="date" class="form-control" id="date" name="date" value="{{ today_date }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="time" class="form-label small fw-semibold text-slate">Time</label>
+                            <input type="time" class="form-control" id="time" name="time" value="{{ current_time }}" required>
+                        </div>
+                    </div>
+
+                    <!-- Live Dynamic Calculation Card -->
+                    <div class="card bg-light-subtle border rounded-3 p-3 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="small fw-bold text-slate"><i class="fa-solid fa-calculator text-emerald me-1"></i> Live Nutrition Summary for This Entry</span>
+                            <span class="badge bg-soft-emerald text-emerald" id="calcMultiplier">1.0 Serving</span>
+                        </div>
+                        <div class="row g-2 text-center">
+                            <div class="col-3">
+                                <small class="text-muted d-block">Calories</small>
+                                <strong class="fs-5 text-slate" id="calcCals">0</strong> <small class="text-muted">kcal</small>
+                            </div>
+                            <div class="col-3">
+                                <small class="text-muted d-block">Protein</small>
+                                <strong class="fs-5 text-info" id="calcProt">0g</strong>
+                            </div>
+                            <div class="col-3">
+                                <small class="text-muted d-block">Carbs</small>
+                                <strong class="fs-5 text-warning" id="calcCarb">0g</strong>
+                            </div>
+                            <div class="col-3">
+                                <small class="text-muted d-block">Fat</small>
+                                <strong class="fs-5 text-danger" id="calcFat">0g</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-emerald w-100 py-2 fw-semibold shadow-sm">
+                        <i class="fa-solid fa-check me-2"></i> Add Food to My Daily Intake
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const foodSelect = document.getElementById('food_id');
+    const qtyInput = document.getElementById('quantity');
+    const calcCals = document.getElementById('calcCals');
+    const calcProt = document.getElementById('calcProt');
+    const calcCarb = document.getElementById('calcCarb');
+    const calcFat = document.getElementById('calcFat');
+    const calcMultiplier = document.getElementById('calcMultiplier');
+    const servingBadge = document.getElementById('servingSizeBadge');
+
+    function updateCalculations() {
+        const selected = foodSelect.options[foodSelect.selectedIndex];
+        const qty = parseFloat(qtyInput.value) || 1.0;
+
+        if (selected && selected.value) {
+            const cals = parseFloat(selected.getAttribute('data-cals')) || 0;
+            const prot = parseFloat(selected.getAttribute('data-prot')) || 0;
+            const carb = parseFloat(selected.getAttribute('data-carb')) || 0;
+            const fat = parseFloat(selected.getAttribute('data-fat')) || 0;
+            const serving = selected.getAttribute('data-serving') || 'serving';
+
+            calcCals.textContent = Math.round(cals * qty);
+            calcProt.textContent = (prot * qty).toFixed(1) + 'g';
+            calcCarb.textContent = (carb * qty).toFixed(1) + 'g';
+            calcFat.textContent = (fat * qty).toFixed(1) + 'g';
+            calcMultiplier.textContent = qty + 'x (' + serving + ')';
+            servingBadge.textContent = serving;
+        } else {
+            calcCals.textContent = '0';
+            calcProt.textContent = '0g';
+            calcCarb.textContent = '0g';
+            calcFat.textContent = '0g';
+            calcMultiplier.textContent = '0 Servings';
+            servingBadge.textContent = 'serving';
+        }
+    }
+
+    foodSelect.addEventListener('change', updateCalculations);
+    qtyInput.addEventListener('input', updateCalculations);
+    updateCalculations();
+});
+</script>
+{% endblock %}

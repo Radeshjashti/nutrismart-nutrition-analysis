@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Healthy Recipes & Meal Planner - NutriSmart{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold text-slate mb-1">
+                <i class="fa-solid fa-utensils text-emerald me-2"></i> Healthy Recipes & Meal Planner
+            </h2>
+            <p class="text-muted small mb-0">
+                Browse chef-crafted, balanced meal recipes with precise macronutrient breakdowns and 1-click meal logging.
+            </p>
+        </div>
+        <a href="{{ url_for('add_food') }}" class="btn btn-outline-slate shadow-sm">
+            <i class="fa-solid fa-plus me-1"></i> Custom Food Log
+        </a>
+    </div>
+
+    <!-- Filter Pills Toolbar -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <!-- Category Filter -->
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <span class="small fw-bold text-slate me-1">Meal:</span>
+                {% for cat in ['All', 'Breakfast', 'Lunch', 'Dinner', 'Snack'] %}
+                    <a href="{{ url_for('recipes', category=cat if cat != 'All' else '', diet=selected_diet if selected_diet != 'All' else '') }}" 
+                       class="btn btn-sm {% if selected_category == cat %}btn-emerald{% else %}btn-outline-slate{% endif %} rounded-pill px-3">
+                        {{ cat }}
+                    </a>
+                {% endfor %}
+            </div>
+
+            <!-- Diet Filter -->
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <span class="small fw-bold text-slate me-1">Diet:</span>
+                {% for d in ['All', 'Vegetarian', 'Non-Vegetarian', 'Vegan', 'Eggetarian'] %}
+                    <a href="{{ url_for('recipes', category=selected_category if selected_category != 'All' else '', diet=d if d != 'All' else '') }}" 
+                       class="btn btn-sm {% if selected_diet == d %}btn-dark{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+                        {{ d }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Recipes Grid -->
+    <div class="row g-4">
+        {% for recipe in recipes %}
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- Title & Badges -->
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="icon-box-sm bg-soft-emerald text-emerald rounded-circle text-center">
+                                    <i class="fa-solid {{ recipe.image_icon }}"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold text-slate mb-0">{{ recipe.title }}</h5>
+                                    <small class="text-muted"><i class="fa-regular fa-clock me-1"></i>{{ recipe.prep_time }} &bull; {{ recipe.category }}</small>
+                                </div>
+                            </div>
+                            <span class="badge {% if recipe.dietary_type == 'Vegan' %}bg-soft-emerald text-emerald{% elif recipe.dietary_type == 'Non-Vegetarian' %}bg-soft-danger text-danger{% else %}bg-soft-warning text-dark{% endif %}">
+                                {{ recipe.dietary_type }}
+                            </span>
+                        </div>
+
+                        <p class="text-muted small mb-3">{{ recipe.description }}</p>
+
+                        <!-- Macro Nutrition Strip -->
+                        <div class="row g-2 text-center mb-3">
+                            <div class="col-3 p-2 bg-light-subtle border rounded-3">
+                                <small class="text-muted d-block">Calories</small>
+                                <strong class="text-slate fs-6">{{ recipe.calories }}</strong>
+                                <small class="text-muted d-block" style="font-size: 0.7rem;">kcal</small>
+                            </div>
+                            <div class="col-3 p-2 bg-light-subtle border rounded-3">
+                                <small class="text-muted d-block">Protein</small>
+                                <strong class="text-info fs-6">{{ recipe.protein }}g</strong>
+                            </div>
+                            <div class="col-3 p-2 bg-light-subtle border rounded-3">
+                                <small class="text-muted d-block">Carbs</small>
+                                <strong class="text-warning fs-6">{{ recipe.carbohydrates }}g</strong>
+                            </div>
+                            <div class="col-3 p-2 bg-light-subtle border rounded-3">
+                                <small class="text-muted d-block">Fiber</small>
+                                <strong class="text-success fs-6">{{ recipe.fiber }}g</strong>
+                            </div>
+                        </div>
+
+                        <!-- Ingredients & Steps Accordion -->
+                        <div class="accordion accordion-flush mb-3" id="accordionRecipe{{ recipe.id }}">
+                            <div class="accordion-item border rounded-3 overflow-hidden">
+                                <h2 class="accordion-header" id="heading{{ recipe.id }}">
+                                    <button class="accordion-button collapsed py-2 px-3 small fw-semibold text-slate" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ recipe.id }}">
+                                        <i class="fa-solid fa-list-check me-2 text-emerald"></i> View Ingredients & Cooking Steps
+                                    </button>
+                                </h2>
+                                <div id="collapse{{ recipe.id }}" class="accordion-collapse collapse" data-bs-parent="#accordionRecipe{{ recipe.id }}">
+                                    <div class="accordion-body p-3 bg-light-subtle small">
+                                        <strong class="text-slate d-block mb-1">Key Ingredients:</strong>
+                                        <ul class="mb-2 ps-3">
+                                            {% for ing in recipe.ingredients %}
+                                                <li>{{ ing }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                        <strong class="text-slate d-block mb-1">Preparation Method:</strong>
+                                        <ol class="mb-0 ps-3">
+                                            {% for step in recipe.instructions %}
+                                                <li>{{ step }}</li>
+                                            {% endfor %}
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 1-Click Log Form -->
+                    <form method="POST" action="{{ url_for('log_recipe', recipe_id=recipe.id) }}" class="border-top pt-3 mt-auto">
+                        <div class="d-flex align-items-center gap-2">
+                            <select name="meal_type" class="form-select form-select-sm w-auto">
+                                <option value="{{ recipe.category }}" selected>{{ recipe.category }}</option>
+                                <option value="Breakfast">Breakfast</option>
+                                <option value="Lunch">Lunch</option>
+                                <option value="Dinner">Dinner</option>
+                                <option value="Snack">Snack</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-emerald flex-grow-1">
+                                <i class="fa-solid fa-circle-check me-1"></i> Log This Recipe to My Meals
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
