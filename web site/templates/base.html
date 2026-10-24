@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NutriSmart - Smart Nutrition Analysis & Diet Management System{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% if current_user %}app-body{% else %}landing-body{% endif %}">
+
+{% if current_user %}
+    <!-- ==================== AUTHENTICATED USER LAYOUT ==================== -->
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar" id="appSidebar">
+            <div class="sidebar-header">
+                <a href="{{ url_for('dashboard') }}" class="brand-link">
+                    <div class="brand-icon">
+                        <i class="fa-solid fa-seedling"></i>
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-title">NutriSmart</span>
+                        <span class="brand-tag">Health Monitor</span>
+                    </div>
+                </a>
+                <button class="btn btn-close-sidebar d-lg-none" id="sidebarCloseBtn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-user-card">
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+                <div class="user-info">
+                    <h6 class="user-name">{{ current_user.name }}</h6>
+                    <span class="badge bg-soft-emerald text-emerald">{{ current_user.dietary_preference }}</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('food_analyzer') }}" class="nav-link {% if request.endpoint == 'food_analyzer' %}active{% endif %}">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Food Analyzer</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('add_food') }}" class="nav-link {% if request.endpoint == 'add_food' %}active{% endif %}">
+                            <i class="fa-solid fa-circle-plus"></i>
+                            <span>Add Food</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('history') }}" class="nav-link {% if request.endpoint == 'history' %}active{% endif %}">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <span>Nutrition History</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('goals') }}" class="nav-link {% if request.endpoint == 'goals' %}active{% endif %}">
+                            <i class="fa-solid fa-bullseye"></i>
+                            <span>Daily Goals</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('compare') }}" class="nav-link {% if request.endpoint == 'compare' %}active{% endif %}">
+                            <i class="fa-solid fa-code-compare"></i>
+                            <span>Food Comparison</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('recipes') }}" class="nav-link {% if request.endpoint == 'recipes' %}active{% endif %}">
+                            <i class="fa-solid fa-utensils"></i>
+                            <span>Healthy Recipes</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('insights') }}" class="nav-link {% if request.endpoint == 'insights' %}active{% endif %}">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                            <span>Health Insights</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('recommendations') }}" class="nav-link {% if request.endpoint == 'recommendations' %}active{% endif %}">
+                            <i class="fa-solid fa-bowl-food"></i>
+                            <span>Diet Recommendations</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('report') }}" class="nav-link {% if request.endpoint == 'report' %}active{% endif %}">
+                            <i class="fa-solid fa-file-medical"></i>
+                            <span>Health Report</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('profile') }}" class="nav-link {% if request.endpoint == 'profile' %}active{% endif %}">
+                            <i class="fa-solid fa-id-card"></i>
+                            <span>Profile & Metrics</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="sidebar-divider"></div>
+
+                <ul class="nav-list mt-auto">
+                    <li class="nav-item">
+                        <a href="{{ url_for('logout') }}" class="nav-link text-danger">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer-note">
+                <small><i class="fa-solid fa-shield-halved me-1"></i> Minor Project Prototype v1.0</small>
+            </div>
+        </aside>
+
+        <!-- Main Wrapper -->
+        <div class="app-main">
+            <!-- Top Navbar -->
+            <header class="app-topbar">
+                <div class="topbar-left">
+                    <button class="btn btn-menu-toggle d-lg-none" id="sidebarOpenBtn">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="page-context">
+                        <span class="text-muted small"><i class="fa-regular fa-calendar me-1"></i>{{ today_date }}</span>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <a href="{{ url_for('download_project') }}" class="btn btn-sm btn-outline-primary me-2" title="Download Full Project ZIP">
+                        <i class="fa-solid fa-download me-1"></i> Download ZIP
+                    </a>
+                    <a href="{{ url_for('add_food') }}" class="btn btn-sm btn-emerald me-2">
+                        <i class="fa-solid fa-plus me-1"></i> Log Meal
+                    </a>
+                    <a href="{{ url_for('food_analyzer') }}" class="btn btn-sm btn-soft-emerald me-3">
+                        <i class="fa-solid fa-camera me-1"></i> Scan Food
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-profile-dropdown dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <span class="user-badge-initial">{{ current_user.name[0] }}</span>
+                            <span class="d-none d-md-inline ms-1">{{ current_user.name.split(' ')[0] }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                            <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="fa-solid fa-user me-2"></i>My Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('goals') }}"><i class="fa-solid fa-bullseye me-2"></i>My Nutrition Goals</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Alerts Container -->
+            <div class="container-fluid px-4 pt-3">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show modern-alert" role="alert">
+                                <div class="d-flex align-items-center">
+                                    {% if category == 'success' %}
+                                        <i class="fa-solid fa-circle-check me-2 fs-5"></i>
+                                    {% elif category == 'danger' %}
+                                        <i class="fa-solid fa-circle-exclamation me-2 fs-5"></i>
+                                    {% elif category == 'warning' %}
+                                        <i class="fa-solid fa-triangle-exclamation me-2 fs-5"></i>
+                                    {% else %}
+                                        <i class="fa-solid fa-circle-info me-2 fs-5"></i>
+                                    {% endif %}
+                                    <div>{{ message }}</div>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <!-- Main Content Body -->
+            <main class="app-content">
+                {% block content %}{% endblock %}
+            </main>
+
+            <!-- Non-Medical Disclaimer Banner -->
+            <footer class="app-footer">
+                <div class="container-fluid px-4 py-2">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <p class="mb-0 text-muted small">
+                                <i class="fa-solid fa-circle-info text-emerald me-1"></i>
+                                <strong>Medical Disclaimer:</strong> NutriSmart is an academic prototype designed for educational food tracking and informational dietary analysis. It is not intended for medical diagnosis, treatment, or professional dietary prescription.
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                            <span class="text-muted small">&copy; {{ current_year }} NutriSmart Project</span>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+{% else %}
+    <!-- ==================== PUBLIC LANDING / AUTH LAYOUT ==================== -->
+    <header class="public-navbar sticky-top">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+                    <div class="brand-icon me-2">
+                        <i class="fa-solid fa-seedling"></i>
+                    </div>
+                    <span class="fw-bold fs-4 text-slate">Nutri<span class="text-emerald">Smart</span></span>
+                </a>
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#publicNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="publicNav">
+                    <ul class="navbar-nav ms-auto align-items-lg-center">
+                        <li class="nav-item"><a class="nav-link px-3" href="{{ url_for('index') }}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-3" href="{{ url_for('index') }}#features">Features</a></li>
+                        <li class="nav-item"><a class="nav-link px-3" href="{{ url_for('index') }}#how-it-works">How It Works</a></li>
+                        <li class="nav-item"><a class="nav-link px-3" href="{{ url_for('index') }}#about">About</a></li>
+                        <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                            <a class="btn btn-outline-emerald px-3 me-2" href="{{ url_for('login') }}">Login</a>
+                        </li>
+                        <li class="nav-item mt-2 mt-lg-0">
+                            <a class="btn btn-emerald px-3 me-2" href="{{ url_for('register') }}">Get Started</a>
+                        </li>
+                        <li class="nav-item mt-2 mt-lg-0">
+                            <a class="btn btn-warning px-3 fw-semibold text-dark shadow-sm me-2" href="{{ url_for('demo_login') }}" title="Log in as Demo User">
+                                <i class="fa-solid fa-flask-vial me-1"></i> Demo Login
+                            </a>
+                        </li>
+                        <li class="nav-item mt-2 mt-lg-0">
+                            <a class="btn btn-primary px-3 fw-semibold text-white shadow-sm" href="{{ url_for('download_project') }}" title="Direct one-click download of the complete project folder as ZIP">
+                                <i class="fa-solid fa-download me-1"></i> Download Project ZIP
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Public Flash Messages -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show modern-alert" role="alert">
+                        <div class="d-flex align-items-center">
+                            {% if category == 'success' %}
+                                <i class="fa-solid fa-circle-check me-2 fs-5"></i>
+                            {% elif category == 'danger' %}
+                                <i class="fa-solid fa-circle-exclamation me-2 fs-5"></i>
+                            {% elif category == 'warning' %}
+                                <i class="fa-solid fa-triangle-exclamation me-2 fs-5"></i>
+                            {% else %}
+                                <i class="fa-solid fa-circle-info me-2 fs-5"></i>
+                            {% endif %}
+                            <div>{{ message }}</div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Public Content -->
+    {% block public_content %}{% endblock %}
+
+    <!-- Public Footer -->
+    <footer class="public-footer">
+        <div class="container py-5">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="brand-icon me-2">
+                            <i class="fa-solid fa-seedling"></i>
+                        </div>
+                        <span class="fw-bold fs-4 text-white">Nutri<span class="text-emerald">Smart</span></span>
+                    </div>
+                    <p class="text-white-50 small mb-3">
+                        A Smart Nutrition Analysis System for Real-Time Food Health Monitoring and Diet Management. Designed as a college minor project prototype blending web technology, nutrition science, and prototype image classification.
+                    </p>
+                    <div class="d-flex gap-2 text-white-50">
+                        <span class="badge bg-secondary-subtle text-dark">Python Flask</span>
+                        <span class="badge bg-secondary-subtle text-dark">SQLite</span>
+                        <span class="badge bg-secondary-subtle text-dark">Chart.js</span>
+                        <span class="badge bg-secondary-subtle text-dark">Pillow ML Hook</span>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="text-white fw-bold mb-3">Quick Links</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="{{ url_for('index') }}">Home</a></li>
+                        <li><a href="{{ url_for('index') }}#features">Features</a></li>
+                        <li><a href="{{ url_for('index') }}#how-it-works">How It Works</a></li>
+                        <li><a href="{{ url_for('index') }}#about">About Project</a></li>
+                        <li><a href="{{ url_for('demo_login') }}">Try Demo Account</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-white fw-bold mb-3">Project Modules</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><i class="fa-solid fa-chevron-right me-1 text-emerald small"></i> Smart Food Analyzer</li>
+                        <li><i class="fa-solid fa-chevron-right me-1 text-emerald small"></i> Image Food Recognition</li>
+                        <li><i class="fa-solid fa-chevron-right me-1 text-emerald small"></i> Macronutrient & Calorie Charts</li>
+                        <li><i class="fa-solid fa-chevron-right me-1 text-emerald small"></i> Micronutrient Deficiency Alerts</li>
+                        <li><i class="fa-solid fa-chevron-right me-1 text-emerald small"></i> Rule-Based Diet Guidance</li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-white fw-bold mb-3">Academic Note</h6>
+                    <p class="text-white-50 small mb-2">
+                        <strong>Informational Guidance:</strong> Values are derived from USDA and ICMR nutritional databases. Portion size estimates and recognition results serve as educational guides.
+                    </p>
+                    <div class="alert alert-warning py-2 px-3 small mb-0">
+                        <i class="fa-solid fa-flask me-1"></i> Demo Access: <strong>demo@nutrismart.com</strong> / <strong>Demo@123</strong>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="text-white-50 small mb-0">&copy; {{ current_year }} NutriSmart - College Minor Project. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
+                    <span class="text-white-50 small">Developed with Flask, SQLAlchemy, Bootstrap 5 & Chart.js</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+{% endif %}
+
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<!-- Custom Main JS -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

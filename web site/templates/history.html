@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Nutrition History - NutriSmart Health System{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold text-slate mb-1">
+                <i class="fa-solid fa-clock-rotate-left text-emerald me-2"></i> Nutrition History
+            </h2>
+            <p class="text-muted small mb-0">
+                Search, filter, and review your historical meal records and nutrient accumulations.
+            </p>
+        </div>
+        <div>
+            <a href="{{ url_for('add_food') }}" class="btn btn-emerald shadow-sm">
+                <i class="fa-solid fa-plus me-1"></i> Add Meal Entry
+            </a>
+        </div>
+    </div>
+
+    <!-- Aggregate Filter Totals Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+                <small class="text-muted d-block text-uppercase">Total Calories</small>
+                <h4 class="fw-extrabold text-slate mb-0">{{ "{:,.0f}".format(total_cals) }}</h4>
+                <span class="text-muted small">kcal</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+                <small class="text-muted d-block text-uppercase">Total Protein</small>
+                <h4 class="fw-extrabold text-info mb-0">{{ total_prot }}g</h4>
+                <span class="text-muted small">muscle repair</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+                <small class="text-muted d-block text-uppercase">Total Carbs</small>
+                <h4 class="fw-extrabold text-warning mb-0">{{ total_carb }}g</h4>
+                <span class="text-muted small">energy fuel</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+                <small class="text-muted d-block text-uppercase">Total Fat & Fiber</small>
+                <h4 class="fw-extrabold text-danger mb-0">{{ total_fat }}g <span class="fs-6 text-muted">/ {{ total_fib }}g</span></h4>
+                <span class="text-muted small">fat / fiber</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search & Filters Toolbar -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4">
+        <form method="GET" action="{{ url_for('history') }}" class="row g-2 align-items-center">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" class="form-control border-start-0" name="search" placeholder="Search by food name..." value="{{ search_query }}">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" name="meal">
+                    <option value="">All Meal Types</option>
+                    <option value="Breakfast" {% if filter_meal == 'Breakfast' %}selected{% endif %}>Breakfast</option>
+                    <option value="Lunch" {% if filter_meal == 'Lunch' %}selected{% endif %}>Lunch</option>
+                    <option value="Dinner" {% if filter_meal == 'Dinner' %}selected{% endif %}>Dinner</option>
+                    <option value="Snack" {% if filter_meal == 'Snack' %}selected{% endif %}>Snack</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="date" class="form-control" name="date" value="{{ filter_date }}">
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-emerald w-100">
+                    <i class="fa-solid fa-filter me-1"></i> Filter
+                </button>
+                <a href="{{ url_for('history') }}" class="btn btn-outline-secondary" title="Reset Filters">
+                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Logs Table Card -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold text-slate mb-0">Recorded Meals ({{ logs|length }} entries)</h6>
+            <button onclick="window.print()" class="btn btn-sm btn-outline-slate">
+                <i class="fa-solid fa-print me-1"></i> Print / Export
+            </button>
+        </div>
+
+        {% if logs %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Food Item</th>
+                            <th>Meal Type</th>
+                            <th>Quantity</th>
+                            <th>Calories</th>
+                            <th>Protein</th>
+                            <th>Carbs</th>
+                            <th>Fat</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold text-slate">{{ log.date.strftime('%b %d, %Y') }}</div>
+                                    <small class="text-muted">{{ log.time }}</small>
+                                </td>
+                                <td>
+                                    <strong class="text-slate">{{ log.food.name }}</strong>
+                                    <small class="text-muted d-block">{{ log.food.category }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge {% if log.meal_type == 'Breakfast' %}bg-soft-warning text-dark{% elif log.meal_type == 'Lunch' %}bg-soft-emerald text-emerald{% elif log.meal_type == 'Dinner' %}bg-soft-info text-info{% else %}bg-light text-dark{% endif %} rounded-pill px-2">
+                                        {{ log.meal_type }}
+                                    </span>
+                                </td>
+                                <td>{{ log.quantity }}x <small class="text-muted">({{ log.food.serving_size }})</small></td>
+                                <td class="fw-bold text-slate">{{ log.calories }} kcal</td>
+                                <td class="text-info">{{ log.protein }}g</td>
+                                <td class="text-warning">{{ log.carbohydrates }}g</td>
+                                <td class="text-danger">{{ log.fat }}g</td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-outline-info me-1" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#detailsModal{{ log.id }}" 
+                                            title="View Micronutrients">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                    <form method="POST" action="{{ url_for('delete_log', log_id=log.id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to remove this food entry?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Entry">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </form>
+
+                                    <!-- Details Modal -->
+                                    <div class="modal fade text-start" id="detailsModal{{ log.id }}" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content rounded-4 border-0 shadow">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title fw-bold text-slate">
+                                                        {{ log.food.name }} <span class="badge bg-soft-emerald text-emerald fs-xs">{{ log.quantity }} Serving(s)</span>
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row g-2 text-center mb-3">
+                                                        <div class="col-3 p-2 bg-light rounded-2">
+                                                            <small class="text-muted d-block">Calories</small>
+                                                            <strong>{{ log.calories }}</strong>
+                                                        </div>
+                                                        <div class="col-3 p-2 bg-light rounded-2">
+                                                            <small class="text-muted d-block">Protein</small>
+                                                            <strong class="text-info">{{ log.protein }}g</strong>
+                                                        </div>
+                                                        <div class="col-3 p-2 bg-light rounded-2">
+                                                            <small class="text-muted d-block">Carbs</small>
+                                                            <strong class="text-warning">{{ log.carbohydrates }}g</strong>
+                                                        </div>
+                                                        <div class="col-3 p-2 bg-light rounded-2">
+                                                            <small class="text-muted d-block">Fat</small>
+                                                            <strong class="text-danger">{{ log.fat }}g</strong>
+                                                        </div>
+                                                    </div>
+
+                                                    <h6 class="fw-bold small text-muted text-uppercase mb-2">Micronutrients & Trace Elements</h6>
+                                                    <ul class="list-group list-group-flush small">
+                                                        <li class="list-group-item d-flex justify-content-between px-0">
+                                                            <span>Dietary Fiber</span>
+                                                            <strong>{{ log.fiber }} g</strong>
+                                                        </li>
+                                                        <li class="list-group-item d-flex justify-content-between px-0">
+                                                            <span>Sugar</span>
+                                                            <strong>{{ log.sugar }} g</strong>
+                                                        </li>
+                                                        <li class="list-group-item d-flex justify-content-between px-0">
+                                                            <span>Sodium</span>
+                                                            <strong>{{ log.sodium }} mg</strong>
+                                                        </li>
+                                                        <li class="list-group-item d-flex justify-content-between px-0">
+                                                            <span>Vitamin A</span>
+                                                            <strong>{{ log.vitamin_a }} mcg</strong>
+                                                        </li>
+                                                        <li class="list-group-item d-flex justify-content-between px-0">
+                                                            <span>Vitamin B12</span>
+                                                            <strong>{{ log.vitamin_b12 }} mcg</strong>
+                                                        </li>
+                                                        <li class="list-group-item d-flex justify-content-between px-0">
+                                                            <span>Vitamin C</span>
+                                                            <strong>{{ log.vitamin_c }} mg</strong>
+                                                        </li>
+                                                        <li class="list-group-item d-flex justify-content-between px-0">
+                                                            <span>Vitamin D</span>
+                                                            <strong>{{ log.vitamin_d }} mcg</strong>
+                                                        </li>
+                                                        <li class="list-group-item d-flex justify-content-between px-0">
+                                                            <span>Iron</span>
+                                                            <strong>{{ log.iron }} mg</strong>
+                                                        </li>
+                                                        <li class="list-group-item d-flex justify-content-between px-0">
+                                                            <span>Calcium</span>
+                                                            <strong>{{ log.calcium }} mg</strong>
+                                                        </li>
+                                                        <li class="list-group-item d-flex justify-content-between px-0">
+                                                            <span>Zinc</span>
+                                                            <strong>{{ log.zinc }} mg</strong>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fa-solid fa-file-circle-question fs-1 text-muted mb-3"></i>
+                <h6 class="text-slate fw-semibold">No records found matching your filters</h6>
+                <p class="text-muted small mb-3">Try adjusting your search query, selecting a different meal, or adding a new food log.</p>
+                <a href="{{ url_for('add_food') }}" class="btn btn-emerald btn-sm">Add Food Entry</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Diet Recommendations - NutriSmart Health System{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <!-- Header -->
+    <div class="mb-4">
+        <h2 class="fw-bold text-slate mb-1">
+            <i class="fa-solid fa-bowl-food text-emerald me-2"></i> Smart Diet Recommendations
+        </h2>
+        <p class="text-muted small mb-0">
+            Personalized meal suggestions generated from your dietary preference (<strong>{{ user.dietary_preference }}</strong>) and current nutritional gaps.
+        </p>
+    </div>
+
+    <!-- Active Nutritional Focus Areas -->
+    <div class="row g-3 mb-4">
+        {% for focus in recommendations.focus_areas %}
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white border-start border-4 border-emerald">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold text-slate mb-0">{{ focus.title }}</h6>
+                        <span class="badge bg-soft-emerald text-emerald">{{ focus.badge }}</span>
+                    </div>
+                    <p class="text-muted small mb-0">{{ focus.desc }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- ==================== STRUCTURED MEAL SUGGESTIONS ==================== -->
+    <div class="row g-4 mb-4">
+        <!-- Breakfast Suggestions -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="icon-box-sm bg-soft-warning text-warning rounded-circle me-3 text-center">
+                        <i class="fa-solid fa-sun"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold text-slate mb-0">Breakfast Ideas</h5>
+                        <small class="text-muted">Metabolic jumpstart for your morning</small>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column gap-3">
+                    {% for meal in recommendations.breakfast %}
+                        <div class="p-3 rounded-3 bg-light-subtle border">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <strong class="text-slate">{{ meal.name }}</strong>
+                                <span class="badge bg-light text-muted border">{{ meal.macros }}</span>
+                            </div>
+                            <div class="d-flex gap-1 mt-2">
+                                {% for tag in meal.tags %}
+                                    <span class="badge bg-soft-emerald text-emerald fs-xs">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Lunch Suggestions -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="icon-box-sm bg-soft-emerald text-emerald rounded-circle me-3 text-center">
+                        <i class="fa-solid fa-cloud-sun"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold text-slate mb-0">Lunch Ideas</h5>
+                        <small class="text-muted">Sustained energy and protein nourishment</small>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column gap-3">
+                    {% for meal in recommendations.lunch %}
+                        <div class="p-3 rounded-3 bg-light-subtle border">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <strong class="text-slate">{{ meal.name }}</strong>
+                                <span class="badge bg-light text-muted border">{{ meal.macros }}</span>
+                            </div>
+                            <div class="d-flex gap-1 mt-2">
+                                {% for tag in meal.tags %}
+                                    <span class="badge bg-soft-emerald text-emerald fs-xs">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Dinner Suggestions -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="icon-box-sm bg-soft-blue text-primary rounded-circle me-3 text-center">
+                        <i class="fa-solid fa-moon"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold text-slate mb-0">Dinner Ideas</h5>
+                        <small class="text-muted">Light, easy to digest, and repair focused</small>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column gap-3">
+                    {% for meal in recommendations.dinner %}
+                        <div class="p-3 rounded-3 bg-light-subtle border">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <strong class="text-slate">{{ meal.name }}</strong>
+                                <span class="badge bg-light text-muted border">{{ meal.macros }}</span>
+                            </div>
+                            <div class="d-flex gap-1 mt-2">
+                                {% for tag in meal.tags %}
+                                    <span class="badge bg-soft-emerald text-emerald fs-xs">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Snack Suggestions -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="icon-box-sm bg-soft-purple text-purple rounded-circle me-3 text-center">
+                        <i class="fa-solid fa-cookie-bite"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold text-slate mb-0">Smart Snack Swaps</h5>
+                        <small class="text-muted">Craving control and micronutrient boosts</small>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column gap-3">
+                    {% for meal in recommendations.snacks %}
+                        <div class="p-3 rounded-3 bg-light-subtle border">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <strong class="text-slate">{{ meal.name }}</strong>
+                                <span class="badge bg-light text-muted border">{{ meal.macros }}</span>
+                            </div>
+                            <div class="d-flex gap-1 mt-2">
+                                {% for tag in meal.tags %}
+                                    <span class="badge bg-soft-emerald text-emerald fs-xs">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Advisory Note -->
+    <div class="alert alert-light border small text-muted">
+        <i class="fa-solid fa-circle-info text-emerald me-1"></i>
+        Recommendations are informational dietary options based on standard nutritional profiles. Consult with a qualified nutritionist or physician for specialized clinical diets.
+    </div>
+</div>
+{% endblock %}

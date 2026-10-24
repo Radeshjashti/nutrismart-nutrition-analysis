@@ -1,0 +1,393 @@
+{% extends "base.html" %}
+
+{% block title %}NutriSmart - Smart Nutrition Analysis & Real-Time Food Health Monitoring{% endblock %}
+
+{% block public_content %}
+<!-- ==================== HERO SECTION ==================== -->
+<section class="hero-section position-relative overflow-hidden">
+    <div class="hero-bg-accent"></div>
+    <div class="container py-5">
+        <div class="row align-items-center g-5 py-lg-4">
+            <div class="col-lg-6">
+                <div class="d-inline-flex align-items-center badge bg-soft-emerald text-emerald px-3 py-2 rounded-pill mb-3">
+                    <i class="fa-solid fa-graduation-cap me-2"></i> College Minor Project Prototype
+                </div>
+                <h1 class="display-4 fw-extrabold text-slate hero-title mb-3">
+                    Smart Nutrition Analysis for a <span class="text-emerald">Healthier You</span>
+                </h1>
+                <p class="lead text-muted mb-4 hero-subtitle">
+                    Monitor your food, understand your nutrition, and make better dietary decisions with intelligent food health analysis.
+                </p>
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    <a href="{{ url_for('register') }}" class="btn btn-emerald btn-lg px-4 shadow-sm">
+                        <i class="fa-solid fa-rocket me-2"></i> Get Started Free
+                    </a>
+                    <a href="{{ url_for('demo_login') }}" class="btn btn-warning btn-lg px-4 shadow-sm text-dark fw-bold">
+                        <i class="fa-solid fa-flask-vial me-2"></i> Quick Demo Access
+                    </a>
+                    <a href="{{ url_for('download_project') }}" class="btn btn-primary btn-lg px-4 shadow-sm fw-bold">
+                        <i class="fa-solid fa-download me-2"></i> Download Full Project (.ZIP)
+                    </a>
+                    <a href="#features" class="btn btn-outline-slate btn-lg px-4">
+                        <i class="fa-solid fa-compass me-2"></i> Explore Features
+                    </a>
+                </div>
+                <div class="d-flex align-items-center gap-4 pt-2 border-top border-light-subtle">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-circle me-2"><i class="fa-solid fa-database text-emerald"></i></div>
+                        <div>
+                            <strong class="d-block text-slate">35+ Foods</strong>
+                            <small class="text-muted">Indian & Global</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="stat-circle me-2"><i class="fa-solid fa-chart-line text-emerald"></i></div>
+                        <div>
+                            <strong class="d-block text-slate">7 Macros & Micros</strong>
+                            <small class="text-muted">Real-time Tracking</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="stat-circle me-2"><i class="fa-solid fa-camera-retro text-emerald"></i></div>
+                        <div>
+                            <strong class="d-block text-slate">Food Scanner</strong>
+                            <small class="text-muted">Prototype AI Vision</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Visual Graphic / Card Mockup -->
+            <div class="col-lg-6">
+                <div class="hero-visual-card position-relative p-4 rounded-4 shadow-lg bg-white border">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-emerald text-white rounded-pill px-3 py-1">Today's Nutrition</span>
+                            <span class="text-muted small">Live Caloric Balance</span>
+                        </div>
+                        <span class="text-emerald fw-bold small"><i class="fa-solid fa-circle text-emerald fs-xs me-1"></i> Active</span>
+                    </div>
+
+                    <!-- Calorie Card -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <div class="p-3 rounded-3 bg-light-subtle border">
+                                <small class="text-muted text-uppercase fw-semibold d-block">Calories Consumed</small>
+                                <span class="fs-4 fw-bold text-slate">1,450 <span class="text-muted fs-6">/ 2,200 kcal</span></span>
+                                <div class="progress mt-2" style="height: 6px;">
+                                    <div class="progress-bar bg-emerald" style="width: 65%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 rounded-3 bg-light-subtle border">
+                                <small class="text-muted text-uppercase fw-semibold d-block">Protein Target</small>
+                                <span class="fs-4 fw-bold text-slate">72g <span class="text-muted fs-6">/ 120g</span></span>
+                                <div class="progress mt-2" style="height: 6px;">
+                                    <div class="progress-bar bg-info" style="width: 60%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Food Detection Floating Badge -->
+                    <div class="p-3 rounded-3 bg-soft-emerald border border-emerald-subtle mb-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="icon-box-sm bg-emerald text-white rounded-circle text-center">
+                                    <i class="fa-solid fa-camera"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold text-slate">Detected Food: Plain Dosa</h6>
+                                    <small class="text-muted">Confidence: 91.4% &bull; 202 kcal</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-emerald text-white">Prototype AI</span>
+                        </div>
+                    </div>
+
+                    <!-- Health Insight Banner -->
+                    <div class="p-3 rounded-3 bg-light border">
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="fa-solid fa-heart-pulse text-emerald mt-1"></i>
+                            <div>
+                                <h6 class="mb-1 fw-bold fs-sm text-slate">Balanced Nutrition Insight</h6>
+                                <p class="mb-0 text-muted small">Recorded macronutrients are aligned with your daily targets. Fiber is at 18g / 30g.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== FEATURES SECTION ==================== -->
+<section id="features" class="py-5 bg-light-subtle">
+    <div class="container py-4">
+        <div class="text-center max-w-700 mx-auto mb-5">
+            <span class="badge bg-soft-emerald text-emerald px-3 py-2 rounded-pill fw-semibold mb-2">Core Capabilities</span>
+            <h2 class="fw-bold text-slate">Comprehensive Nutrition Monitoring</h2>
+            <p class="text-muted">A full-stack architecture combining relational nutritional databases, visual analytics, and intelligent rule-based dietary guidance.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Feature 1: Food Recognition -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card h-100 p-4 border-0 shadow-sm rounded-4">
+                    <div class="feature-icon-wrapper bg-soft-emerald text-emerald mb-3">
+                        <i class="fa-solid fa-camera-viewfinder fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold text-slate mb-2">Food Recognition</h5>
+                    <p class="text-muted small mb-3">
+                        Prototype visual food scanner using Pillow feature extraction and modular machine learning hook. Recognizes staples like Dosa, Idli, Salad, Pizza, Rice, and more.
+                    </p>
+                    <span class="badge bg-light text-muted w-fit">Image Processing & AI Hook</span>
+                </div>
+            </div>
+
+            <!-- Feature 2: Nutrition Analysis -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card h-100 p-4 border-0 shadow-sm rounded-4">
+                    <div class="feature-icon-wrapper bg-soft-blue text-primary mb-3">
+                        <i class="fa-solid fa-flask fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold text-slate mb-2">Nutrition Analysis</h5>
+                    <p class="text-muted small mb-3">
+                        Instant computation of calories, macros (protein, carbs, fat), and essential micronutrients per serving or customizable portion multipliers.
+                    </p>
+                    <span class="badge bg-light text-muted w-fit">Detailed Database Lookup</span>
+                </div>
+            </div>
+
+            <!-- Feature 3: Calorie Tracking -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card h-100 p-4 border-0 shadow-sm rounded-4">
+                    <div class="feature-icon-wrapper bg-soft-warning text-warning mb-3">
+                        <i class="fa-solid fa-fire-flame-curved fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold text-slate mb-2">Calorie Tracking</h5>
+                    <p class="text-muted small mb-3">
+                        Automated Mifflin-St Jeor TDEE calculation based on user age, gender, height, weight, and activity level. Real-time daily progress bars.
+                    </p>
+                    <span class="badge bg-light text-muted w-fit">Energy Balance</span>
+                </div>
+            </div>
+
+            <!-- Feature 4: Macro Monitoring -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card h-100 p-4 border-0 shadow-sm rounded-4">
+                    <div class="feature-icon-wrapper bg-soft-purple text-purple mb-3">
+                        <i class="fa-solid fa-chart-pie fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold text-slate mb-2">Macro Monitoring</h5>
+                    <p class="text-muted small mb-3">
+                        Interactive Chart.js doughnut and bar charts breaking down your macronutrient distribution (Protein, Carbohydrates, Healthy Fats, Fiber).
+                    </p>
+                    <span class="badge bg-light text-muted w-fit">Interactive Chart.js</span>
+                </div>
+            </div>
+
+            <!-- Feature 5: Micronutrient Analysis -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card h-100 p-4 border-0 shadow-sm rounded-4">
+                    <div class="feature-icon-wrapper bg-soft-teal text-teal mb-3">
+                        <i class="fa-solid fa-shield-virus fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold text-slate mb-2">Micronutrient Analysis</h5>
+                    <p class="text-muted small mb-3">
+                        Track essential vitamins and minerals: Vitamin A, B12, C, D, Iron, Calcium, and Zinc. Identifies low intake against RDA benchmarks.
+                    </p>
+                    <span class="badge bg-light text-muted w-fit">Deficiency Awareness</span>
+                </div>
+            </div>
+
+            <!-- Feature 6: Diet Recommendations -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card h-100 p-4 border-0 shadow-sm rounded-4">
+                    <div class="feature-icon-wrapper bg-soft-success text-success mb-3">
+                        <i class="fa-solid fa-utensils fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold text-slate mb-2">Diet Recommendations</h5>
+                    <p class="text-muted small mb-3">
+                        Tailored breakfast, lunch, dinner, and snack meal suggestions customized according to dietary preferences (Vegetarian, Non-Veg, Vegan, Eggetarian).
+                    </p>
+                    <span class="badge bg-light text-muted w-fit">Rule-Based Reasoning</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== HOW IT WORKS ==================== -->
+<section id="how-it-works" class="py-5 bg-white">
+    <div class="container py-4">
+        <div class="text-center max-w-700 mx-auto mb-5">
+            <span class="badge bg-soft-emerald text-emerald px-3 py-2 rounded-pill fw-semibold mb-2">Simple Workflow</span>
+            <h2 class="fw-bold text-slate">How NutriSmart Works</h2>
+            <p class="text-muted">Four straightforward steps to take control of your nutritional intake and dietary habits.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="step-card text-center p-4 rounded-4 border h-100">
+                    <div class="step-badge mb-3">1</div>
+                    <div class="step-icon mb-3 text-emerald"><i class="fa-solid fa-camera fs-2"></i></div>
+                    <h5 class="fw-bold text-slate mb-2">Enter or Upload Food</h5>
+                    <p class="text-muted small mb-0">Search manual foods from our 35+ verified database or upload a food picture for automated prototype recognition.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="step-card text-center p-4 rounded-4 border h-100">
+                    <div class="step-badge mb-3">2</div>
+                    <div class="step-icon mb-3 text-emerald"><i class="fa-solid fa-magnifying-glass-chart fs-2"></i></div>
+                    <h5 class="fw-bold text-slate mb-2">Analyze Nutrition</h5>
+                    <p class="text-muted small mb-0">Instantly inspect calories, macronutrients, and vitamins/minerals calculated precisely for your portion size.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="step-card text-center p-4 rounded-4 border h-100">
+                    <div class="step-badge mb-3">3</div>
+                    <div class="step-icon mb-3 text-emerald"><i class="fa-solid fa-clipboard-list fs-2"></i></div>
+                    <h5 class="fw-bold text-slate mb-2">Track Daily Intake</h5>
+                    <p class="text-muted small mb-0">Log items under Breakfast, Lunch, Dinner, or Snack. Monitor progress bars against calculated TDEE targets.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="step-card text-center p-4 rounded-4 border h-100">
+                    <div class="step-badge mb-3">4</div>
+                    <div class="step-icon mb-3 text-emerald"><i class="fa-solid fa-lightbulb fs-2"></i></div>
+                    <h5 class="fw-bold text-slate mb-2">Receive Health Insights</h5>
+                    <p class="text-muted small mb-0">Gain actionable, rule-based dietary pattern insights and healthy food swap suggestions without medical jargon.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== ABOUT & COLLEGE PROJECT INFO ==================== -->
+<section id="about" class="py-5 bg-light-subtle">
+    <div class="container py-4">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="badge bg-soft-emerald text-emerald px-3 py-2 rounded-pill fw-semibold mb-2">About The Project</span>
+                <h2 class="fw-bold text-slate mb-3">A Smart Nutrition Analysis System for Real-Time Food Health Monitoring and Diet Management</h2>
+                <p class="text-muted mb-3">
+                    Modern lifestyles often lead to irregular dietary habits, hidden caloric excess, and micronutrient deficiencies. NutriSmart was developed as a comprehensive college minor project prototype to bridge the gap between nutritional science, computer vision, and user-friendly web interfaces.
+                </p>
+                <p class="text-muted mb-4">
+                    The platform integrates Python Flask, SQLite with SQLAlchemy ORM, Chart.js interactive visualization, and a modular image processing pipeline designed to support deep learning classification models such as MobileNetV2 and ResNet.
+                </p>
+
+                <div class="d-flex flex-column gap-2 mb-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-circle-check text-emerald me-2"></i>
+                        <span class="text-slate fw-semibold">Local Execution: Ready with SQLite & Python 3</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-circle-check text-emerald me-2"></i>
+                        <span class="text-slate fw-semibold">Session-based Authentication & Password Hashing</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-circle-check text-emerald me-2"></i>
+                        <span class="text-slate fw-semibold">Mifflin-St Jeor Automated Calorie Target Calculations</span>
+                    </div>
+                </div>
+
+                <a href="{{ url_for('demo_login') }}" class="btn btn-emerald px-4">
+                    <i class="fa-solid fa-play me-2"></i> Launch Working Demo
+                </a>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                    <h5 class="fw-bold text-slate mb-3"><i class="fa-solid fa-cubes me-2 text-emerald"></i> Project Architecture</h5>
+                    <ul class="list-group list-group-flush small">
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                            <span><i class="fa-solid fa-code me-2 text-muted"></i> Backend Framework</span>
+                            <span class="badge bg-light text-dark">Python Flask 3.0</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                            <span><i class="fa-solid fa-database me-2 text-muted"></i> Relational Database & ORM</span>
+                            <span class="badge bg-light text-dark">SQLite + SQLAlchemy</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                            <span><i class="fa-solid fa-palette me-2 text-muted"></i> Frontend Interface</span>
+                            <span class="badge bg-light text-dark">HTML5, CSS3, Bootstrap 5, JS</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                            <span><i class="fa-solid fa-chart-simple me-2 text-muted"></i> Visual Analytics</span>
+                            <span class="badge bg-light text-dark">Chart.js 4.4</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                            <span><i class="fa-solid fa-eye me-2 text-muted"></i> Vision & Image Processing</span>
+                            <span class="badge bg-light text-dark">Pillow / Modular Keras Hook</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                            <span><i class="fa-solid fa-shield-halved me-2 text-muted"></i> Security & Sessions</span>
+                            <span class="badge bg-light text-dark">Werkzeug Security</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== LIMITATIONS & FUTURE SCOPE ==================== -->
+<section class="py-5 bg-white">
+    <div class="container py-4">
+        <div class="row g-4">
+            <!-- Project Limitations -->
+            <div class="col-lg-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 border-start border-warning border-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fa-solid fa-triangle-exclamation text-warning fs-4 me-2"></i>
+                        <h5 class="fw-bold text-slate mb-0">Project Limitations</h5>
+                    </div>
+                    <ul class="text-muted small ps-3 mb-0 d-flex flex-column gap-2">
+                        <li><strong>Prototype Food Recognition:</strong> Accuracy is subject to pre-defined classes and image clarity. Currently utilizes a modular heuristic prototype designed for educational demonstration.</li>
+                        <li><strong>Approximate Nutritional Values:</strong> Database figures represent standard USDA/ICMR averages; actual prepared dishes vary by ingredients and cooking oils.</li>
+                        <li><strong>Portion Estimation:</strong> Estimation from 2D images is approximate; users are encouraged to verify portion weights.</li>
+                        <li><strong>Informational Guidance:</strong> The system is strictly non-medical and does not replace registered dietitians or physicians.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Future Enhancements -->
+            <div class="col-lg-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 border-start border-emerald border-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fa-solid fa-wand-magic-sparkles text-emerald fs-4 me-2"></i>
+                        <h5 class="fw-bold text-slate mb-0">Future Enhancements</h5>
+                    </div>
+                    <ul class="text-muted small ps-3 mb-0 d-flex flex-column gap-2">
+                        <li><strong>Deep Learning Vision:</strong> Train custom convolutional neural networks (CNNs) on Food-101 and Indian Food datasets via TensorFlow/Keras.</li>
+                        <li><strong>Automated 3D Volume Estimation:</strong> Depth sensor & AR camera integration for automated portion size measurement.</li>
+                        <li><strong>Wearable & CGM Integration:</strong> Sync with Apple Health, Google Fit, and Continuous Glucose Monitors (CGM).</li>
+                        <li><strong>Conversational AI Assistant:</strong> Voice-activated food logging using speech-to-text models.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== CALL TO ACTION ==================== -->
+<section class="py-5 bg-soft-emerald text-center">
+    <div class="container py-4">
+        <h2 class="fw-bold text-slate mb-3">Ready to Experience NutriSmart?</h2>
+        <p class="text-muted max-w-600 mx-auto mb-4">
+            Test the live working prototype right now using our pre-loaded demo account or create your custom nutrition profile.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{{ url_for('demo_login') }}" class="btn btn-warning btn-lg px-4 shadow-sm text-dark fw-bold">
+                <i class="fa-solid fa-flask-vial me-2"></i> Launch Demo Account
+            </a>
+            <a href="{{ url_for('register') }}" class="btn btn-emerald btn-lg px-4 shadow-sm">
+                <i class="fa-solid fa-user-plus me-2"></i> Create New Account
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

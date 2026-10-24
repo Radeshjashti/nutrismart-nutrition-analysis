@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Food Analyzer - NutriSmart{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <!-- Header -->
+    <div class="mb-4">
+        <h2 class="fw-bold text-slate mb-1">
+            <i class="fa-solid fa-wand-magic-sparkles text-emerald me-2"></i> Smart Food Analyzer
+        </h2>
+        <p class="text-muted small mb-0">
+            Analyze complete macronutrient and micronutrient profiles using manual search or prototype image food recognition.
+        </p>
+    </div>
+
+    <!-- Dual Option Tabs / Grid -->
+    <div class="row g-4 mb-4">
+        <!-- Option 1: Manual Food Entry & Search -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="icon-box-sm bg-soft-blue text-primary rounded-circle me-2 text-center">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold text-slate mb-0">Option 1: Manual Food Search</h5>
+                        <small class="text-muted">Search from 35+ verified foods in the local database</small>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('food_analyzer') }}" class="mb-3">
+                    <input type="hidden" name="manual_search" value="1">
+                    <div class="mb-3">
+                        <label for="food_select" class="form-label small fw-semibold text-slate">Select Food Item</label>
+                        <select class="form-select" id="food_select" name="food_id_select" onchange="window.location.href='{{ url_for('food_analyzer') }}?food_id=' + this.value">
+                            <option value="">-- Choose a Food Item from Database --</option>
+                            {% for f in all_foods %}
+                                <option value="{{ f.id }}" {% if selected_food and selected_food.id == f.id %}selected{% endif %}>
+                                    {{ f.name }} ({{ f.serving_size }} - {{ f.calories }} kcal)
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="food_search_input" class="form-label small fw-semibold text-slate">Or Quick Search by Name</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="food_search_input" name="food_search" placeholder="e.g. Dosa, Paneer, Chicken, Apple...">
+                            <button class="btn btn-emerald" type="submit">
+                                <i class="fa-solid fa-magnifying-glass me-1"></i> Search
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="alert alert-light border small text-muted mb-0">
+                    <i class="fa-solid fa-circle-info text-emerald me-1"></i>
+                    Select any food above to view its comprehensive 13-nutrient laboratory reference breakdown.
+                </div>
+            </div>
+        </div>
+
+        <!-- Option 2: Upload Food Image -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box-sm bg-soft-emerald text-emerald rounded-circle me-2 text-center">
+                            <i class="fa-solid fa-camera"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold text-slate mb-0">Option 2: Food Image & Camera Scanner</h5>
+                            <small class="text-muted">Upload file or snap live camera photo</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-emerald" id="startCameraBtn">
+                        <i class="fa-solid fa-camera-retro me-1"></i> Use Camera
+                    </button>
+                </div>
+
+                <!-- WebRTC Live Camera Section (Hidden initially) -->
+                <div id="cameraSection" class="d-none text-center p-3 border rounded-3 bg-light mb-3">
+                    <video id="cameraVideo" class="w-100 rounded-3 mb-2 shadow-sm" style="max-height: 220px; object-fit: cover; background: #000;" playsinline></video>
+                    <div class="d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-emerald btn-sm" id="capturePhotoBtn">
+                            <i class="fa-solid fa-circle-dot me-1"></i> Capture Photo
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="stopCameraBtn">
+                            <i class="fa-solid fa-xmark me-1"></i> Close Camera
+                        </button>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('food_analyzer') }}" enctype="multipart/form-data" id="imageUploadForm">
+                    <input type="hidden" name="upload_image" value="1">
+                    <div class="upload-dropzone mb-3 text-center p-4 border rounded-3 position-relative" id="dropzoneArea">
+                        <input type="file" name="food_image" id="foodImageInput" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept="image/*">
+                        <div id="dropzoneDefaultState">
+                            <i class="fa-solid fa-cloud-arrow-up text-emerald fs-1 mb-2"></i>
+                            <h6 class="fw-bold text-slate mb-1">Click or drag food image here</h6>
+                            <p class="text-muted small mb-0">Supports JPG, PNG, WEBP (Max 16MB)</p>
+                        </div>
+                        <div id="dropzonePreviewState" class="d-none">
+                            <img id="imagePreview" src="#" alt="Preview" class="img-fluid rounded-3 mb-2" style="max-height: 160px; object-fit: contain;">
+                            <div class="text-slate fw-semibold small" id="imageFileName">image.jpg</div>
+                            <span class="badge bg-soft-emerald text-emerald">Click to change image</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-emerald w-100 py-2 shadow-sm" id="analyzeBtn">
+                        <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Analyze Image
+                    </button>
+                </form>
+
+                <div class="alert alert-light border small text-muted mb-0 mt-3">
+                    <i class="fa-solid fa-flask-vial text-warning me-1"></i>
+                    <strong>Supported Demo Food Classes:</strong> Mutton Biryani, Chicken Dum Biryani, Dosa, Idli, Chapati (Roti), Steamed Rice, Samosa, Sambar, Salad, Paneer, Apple, Banana, Egg, Pizza, Burger.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== ANALYSIS RESULTS DISPLAY ==================== -->
+    {% if recognition_result %}
+        <!-- AI Food Recognition Output Banner -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4 border-start border-emerald border-5" id="analysisResultsSection">
+            <div class="row align-items-center g-3">
+                {% if uploaded_image_url %}
+                    <div class="col-md-3 text-center">
+                        <img src="{{ uploaded_image_url }}" alt="Uploaded Food" class="img-fluid rounded-3 shadow-sm border" style="max-height: 140px; object-fit: cover;">
+                    </div>
+                {% endif %}
+                <div class="col-md-{{ '9' if uploaded_image_url else '12' }}">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-emerald text-white px-3 py-1">
+                            <i class="fa-solid fa-robot me-1"></i> Prototype AI Recognition
+                        </span>
+                        <span class="badge bg-light text-muted border">Confidence: {{ recognition_result.confidence }}%</span>
+                        {% if recognition_result.match_reason %}
+                            <span class="badge bg-soft-blue text-primary border border-primary-subtle d-none d-md-inline-block">
+                                <i class="fa-solid fa-circle-check me-1"></i> {{ recognition_result.match_reason }}
+                            </span>
+                        {% endif %}
+                    </div>
+                    <h3 class="fw-extrabold text-slate mb-1">
+                        Detected Food: <span class="text-emerald">{{ recognition_result.detected_food }}</span>
+                    </h3>
+                    <p class="text-muted small mb-2">{{ recognition_result.description }}</p>
+                    
+                    <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+                        <small class="text-muted fw-semibold">Alternative candidates:</small>
+                        {% for alt in recognition_result.alternatives %}
+                            <a href="{{ url_for('food_analyzer') }}?food_search={{ alt.db_name }}" class="badge bg-light text-dark border text-decoration-none px-2 py-1">
+                                <i class="fa-solid fa-utensils me-1 text-emerald"></i> {{ alt.name }} ({{ alt.confidence }}%)
+                            </a>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Quick Dish Switcher for Instant User Correction -->
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+                            <span class="small fw-bold text-slate">
+                                <i class="fa-solid fa-arrows-rotate text-emerald me-1"></i> Not what you uploaded? Switch to:
+                            </span>
+                            <div class="d-flex flex-wrap gap-1">
+                                <a href="{{ url_for('food_analyzer') }}?food_search=Traditional Mutton Biryani" class="btn btn-sm btn-outline-secondary py-1 px-2 small">
+                                    🍲 Mutton Biryani
+                                </a>
+                                <a href="{{ url_for('food_analyzer') }}?food_search=Chicken Dum Biryani" class="btn btn-sm btn-outline-secondary py-1 px-2 small">
+                                    🍗 Chicken Biryani
+                                </a>
+                                <a href="{{ url_for('food_analyzer') }}?food_search=Plain Dosa" class="btn btn-sm btn-outline-secondary py-1 px-2 small">
+                                    🥞 Plain Dosa
+                                </a>
+                                <a href="{{ url_for('food_analyzer') }}?food_search=Steamed Idli" class="btn btn-sm btn-outline-secondary py-1 px-2 small">
+                                    ⚪ Steamed Idli
+                                </a>
+                                <a href="{{ url_for('food_analyzer') }}?food_search=Crispy Potato Samosa" class="btn btn-sm btn-outline-secondary py-1 px-2 small">
+                                    🥟 Samosa
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <small class="text-muted d-block mt-2 fst-italic">
+                        <i class="fa-solid fa-microchip me-1"></i> {{ recognition_result.note }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if selected_food %}
+        <!-- Comprehensive Nutrient Sheet for Selected Food -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 border-bottom pb-3 mb-4">
+                <div>
+                    <div class="d-flex align-items-center gap-2">
+                        <h3 class="fw-bold text-slate mb-0">{{ selected_food.name }}</h3>
+                        <span class="badge {% if selected_food.dietary_type == 'Vegan' %}bg-soft-emerald text-emerald{% elif selected_food.dietary_type == 'Non-Vegetarian' %}bg-soft-danger text-danger{% else %}bg-soft-warning text-dark{% endif %}">
+                            {{ selected_food.dietary_type }}
+                        </span>
+                    </div>
+                    <span class="text-muted small">
+                        Serving Reference: <strong>{{ selected_food.serving_size }}</strong> &bull; Category: {{ selected_food.category }}
+                    </span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('add_food') }}?food_id={{ selected_food.id }}" class="btn btn-emerald">
+                        <i class="fa-solid fa-plus me-1"></i> Log This Food to My Diary
+                    </a>
+                </div>
+            </div>
+
+            <!-- Primary Macronutrients Grid -->
+            <h6 class="fw-bold text-slate text-uppercase small mb-3">Macronutrients (Per Serving)</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded-3 bg-light-subtle border text-center">
+                        <small class="text-muted d-block">Calories</small>
+                        <h4 class="fw-extrabold text-slate mb-0">{{ selected_food.calories }}</h4>
+                        <span class="text-muted small">kcal</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded-3 bg-light-subtle border text-center">
+                        <small class="text-muted d-block">Protein</small>
+                        <h4 class="fw-extrabold text-info mb-0">{{ selected_food.protein }}g</h4>
+                        <span class="text-muted small">{{ round(selected_food.protein * 4 / (selected_food.calories or 1) * 100, 1) }}% energy</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded-3 bg-light-subtle border text-center">
+                        <small class="text-muted d-block">Carbohydrates</small>
+                        <h4 class="fw-extrabold text-warning mb-0">{{ selected_food.carbohydrates }}g</h4>
+                        <span class="text-muted small">{{ round(selected_food.carbohydrates * 4 / (selected_food.calories or 1) * 100, 1) }}% energy</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded-3 bg-light-subtle border text-center">
+                        <small class="text-muted d-block">Healthy Fats</small>
+                        <h4 class="fw-extrabold text-danger mb-0">{{ selected_food.fat }}g</h4>
+                        <span class="text-muted small">{{ round(selected_food.fat * 9 / (selected_food.calories or 1) * 100, 1) }}% energy</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secondary Macros & Fibers -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="d-flex justify-content-between p-2 border-bottom">
+                        <span class="text-muted small"><i class="fa-solid fa-seedling text-emerald me-1"></i> Dietary Fiber</span>
+                        <strong class="text-slate">{{ selected_food.fiber }} g</strong>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex justify-content-between p-2 border-bottom">
+                        <span class="text-muted small"><i class="fa-solid fa-cube text-warning me-1"></i> Sugars</span>
+                        <strong class="text-slate">{{ selected_food.sugar }} g</strong>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex justify-content-between p-2 border-bottom">
+                        <span class="text-muted small"><i class="fa-solid fa-droplet text-info me-1"></i> Sodium</span>
+                        <strong class="text-slate">{{ selected_food.sodium }} mg</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Micronutrients Table (Section 9 Requirement) -->
+            <h6 class="fw-bold text-slate text-uppercase small mb-3">Micronutrients & Essential Minerals</h6>
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm text-center align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Vitamin A</th>
+                            <th>Vitamin B12</th>
+                            <th>Vitamin C</th>
+                            <th>Vitamin D</th>
+                            <th>Iron</th>
+                            <th>Calcium</th>
+                            <th>Zinc</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>{{ selected_food.vitamin_a }}</strong> mcg</td>
+                            <td><strong>{{ selected_food.vitamin_b12 }}</strong> mcg</td>
+                            <td><strong>{{ selected_food.vitamin_c }}</strong> mg</td>
+                            <td><strong>{{ selected_food.vitamin_d }}</strong> mcg</td>
+                            <td><strong>{{ selected_food.iron }}</strong> mg</td>
+                            <td><strong>{{ selected_food.calcium }}</strong> mg</td>
+                            <td><strong>{{ selected_food.zinc }}</strong> mg</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-3 text-muted small fst-italic">
+                <i class="fa-solid fa-circle-info me-1"></i> Reference values compiled from USDA FoodData Central & ICMR Nutritional Reference Standards for Indian Foods.
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/analyzer.js') }}"></script>
+{% endblock %}

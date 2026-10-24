@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Profile & Health Metrics - NutriSmart{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <!-- Header -->
+    <div class="mb-4">
+        <h2 class="fw-bold text-slate mb-1">
+            <i class="fa-solid fa-id-card text-emerald me-2"></i> User Profile & Metabolic Metrics
+        </h2>
+        <p class="text-muted small mb-0">
+            View your calculated Body Mass Index (BMI), estimated caloric burn, and update personal account details.
+        </p>
+    </div>
+
+    <!-- Anthropometric Estimates Cards -->
+    <div class="row g-3 mb-4">
+        <!-- BMI Card -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center h-100">
+                <small class="text-muted text-uppercase fw-semibold d-block mb-1">Body Mass Index (BMI)</small>
+                <h2 class="fw-extrabold text-slate mb-1">{{ user.bmi }}</h2>
+                <span class="badge {% if user.bmi_category == 'Normal weight' %}bg-soft-emerald text-emerald{% elif user.bmi_category == 'Underweight' %}bg-soft-warning text-dark{% else %}bg-soft-danger text-danger{% endif %} px-3 py-1 rounded-pill mb-2">
+                    {{ user.bmi_category }}
+                </span>
+                <p class="text-muted small mb-0" style="font-size: 0.8rem;">
+                    Standard adult normal range: 18.5 – 24.9 kg/m&sup2;.
+                </p>
+            </div>
+        </div>
+
+        <!-- BMR Card -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center h-100">
+                <small class="text-muted text-uppercase fw-semibold d-block mb-1">Basal Metabolic Rate (BMR)</small>
+                <h2 class="fw-extrabold text-slate mb-1">{{ user.bmr }} <span class="fs-6 text-muted">kcal</span></h2>
+                <span class="badge bg-soft-info text-info px-3 py-1 rounded-pill mb-2">Resting Energy</span>
+                <p class="text-muted small mb-0" style="font-size: 0.8rem;">
+                    Minimum calories burned daily at complete rest for organ function.
+                </p>
+            </div>
+        </div>
+
+        <!-- TDEE Card -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center h-100">
+                <small class="text-muted text-uppercase fw-semibold d-block mb-1">Estimated Maintenance (TDEE)</small>
+                <h2 class="fw-extrabold text-emerald mb-1">{{ user.tdee }} <span class="fs-6 text-muted">kcal</span></h2>
+                <span class="badge bg-soft-emerald text-emerald px-3 py-1 rounded-pill mb-2">{{ user.activity_level }}</span>
+                <p class="text-muted small mb-0" style="font-size: 0.8rem;">
+                    Estimated daily calorie burn factoring in your physical lifestyle.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Edit Profile Form -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <h5 class="fw-bold text-slate mb-3 pb-2 border-bottom">
+                    <i class="fa-solid fa-user-pen text-emerald me-2"></i> Update Profile Information
+                </h5>
+
+                <form method="POST" action="{{ url_for('profile') }}">
+                    <input type="hidden" name="action" value="update_profile">
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label small fw-semibold text-slate">Full Name</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-slate">Email Address</label>
+                            <input type="email" class="form-control bg-light" value="{{ user.email }}" disabled>
+                            <small class="text-muted">Email is linked to your login identity</small>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label for="age" class="form-label small fw-semibold text-slate">Age (years)</label>
+                            <input type="number" class="form-control" id="age" name="age" value="{{ user.age }}" min="12" max="110" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="gender" class="form-label small fw-semibold text-slate">Gender</label>
+                            <select class="form-select" id="gender" name="gender" required>
+                                <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
+                                <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+                                <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="dietary_preference" class="form-label small fw-semibold text-slate">Dietary Preference</label>
+                            <select class="form-select" id="dietary_preference" name="dietary_preference" required>
+                                <option value="Vegetarian" {% if user.dietary_preference == 'Vegetarian' %}selected{% endif %}>Vegetarian</option>
+                                <option value="Non-Vegetarian" {% if user.dietary_preference == 'Non-Vegetarian' %}selected{% endif %}>Non-Vegetarian</option>
+                                <option value="Vegan" {% if user.dietary_preference == 'Vegan' %}selected{% endif %}>Vegan</option>
+                                <option value="Eggetarian" {% if user.dietary_preference == 'Eggetarian' %}selected{% endif %}>Eggetarian</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label for="height" class="form-label small fw-semibold text-slate">Height (cm)</label>
+                            <input type="number" step="any" min="50" max="260" class="form-control" id="height" name="height" value="{{ user.height }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="weight" class="form-label small fw-semibold text-slate">Weight (kg)</label>
+                            <input type="number" step="any" min="20" max="350" class="form-control" id="weight" name="weight" value="{{ user.weight }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="activity_level" class="form-label small fw-semibold text-slate">Activity Level</label>
+                            <select class="form-select" id="activity_level" name="activity_level" required>
+                                <option value="Sedentary" {% if user.activity_level == 'Sedentary' %}selected{% endif %}>Sedentary</option>
+                                <option value="Lightly Active" {% if user.activity_level == 'Lightly Active' %}selected{% endif %}>Lightly Active</option>
+                                <option value="Moderately Active" {% if user.activity_level == 'Moderately Active' %}selected{% endif %}>Moderately Active</option>
+                                <option value="Very Active" {% if user.activity_level == 'Very Active' %}selected{% endif %}>Very Active</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-emerald w-100 py-2 fw-semibold shadow-sm">
+                        <i class="fa-solid fa-floppy-disk me-2"></i> Update Profile & Recalculate Metrics
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Change Password Card -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+                <h5 class="fw-bold text-slate mb-3 pb-2 border-bottom">
+                    <i class="fa-solid fa-lock text-emerald me-2"></i> Security & Password
+                </h5>
+
+                <form method="POST" action="{{ url_for('profile') }}">
+                    <input type="hidden" name="action" value="change_password">
+
+                    <div class="mb-3">
+                        <label for="current_password" class="form-label small fw-semibold text-slate">Current Password</label>
+                        <input type="password" class="form-control" id="current_password" name="current_password" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label small fw-semibold text-slate">New Password</label>
+                        <input type="password" class="form-control" id="new_password" name="new_password" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="confirm_password" class="form-label small fw-semibold text-slate">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-slate w-100 py-2 fw-semibold">
+                        <i class="fa-solid fa-key me-2"></i> Update Password
+                    </button>
+                </form>
+            </div>
+
+            <!-- Informational Disclaimer Note -->
+            <div class="alert alert-light border small text-muted">
+                <i class="fa-solid fa-circle-info text-emerald me-1"></i>
+                <strong>Note on Calculations:</strong> BMI and TDEE values are informational indicators. They serve as mathematical estimates and should not be used as clinical measures of body composition or clinical health.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
